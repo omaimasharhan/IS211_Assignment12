@@ -19,14 +19,14 @@
     <h2>Students</h2>
     <ul>
         {% for student in students %}
-            <li>{{ student.FirstName }} {{ student.LastName }}</li>
+            <li>{{ student.FirstName }} {{ student.LastName }} <form method="post" action="{{ url_for('delete_student', student_id=student.ID) }}"><input type="submit" value="Delete"></form></li>
         {% endfor %}
     </ul>
 
     <h2>Quizzes</h2>
     <ul>
         {% for quiz in quizzes %}
-            <li>{{ quiz.Subject }} - {{ quiz.QuizDate }}</li>
+            <li>{{ quiz.Subject }} - {{ quiz.QuizDate }} <form method="post" action="{{ url_for('delete_quiz', quiz_id=quiz.ID) }}"><input type="submit" value="Delete"></form></li>
         {% endfor %}
     </ul>
 </body>

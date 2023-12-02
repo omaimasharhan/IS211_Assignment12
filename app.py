@@ -1,27 +1,25 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
-
-conn = sqlite3.connect('hw12.db')
-conn.close()
-
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
-username = 'admin'
-password = 'password'
 
+# Define the correct username and password
+correct_username = 'admin'
+correct_password = 'password'
 
 @app.route('/')
 def home():
     return redirect(url_for('login'))
 
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
 
-        if username == username and password == password:
+        if username == correct_username and correct_password == password:
+            # Store the username in the session to indicate the user is logged in
             session['username'] = username
             return redirect(url_for('dashboard'))
         else:
@@ -29,10 +27,10 @@ def login():
 
     return render_template('login.html', error=None)
 
-
 @app.route('/dashboard')
 def dashboard():
-    if 'username' in session:
+    # Check if the user is logged in by verifying the username in the session
+    if 'username' in session and session['username'] == correct_username:
         con = sqlite3.connect("hw12.db")
         con.row_factory = sqlite3.Row
 
@@ -46,8 +44,6 @@ def dashboard():
         return render_template('dashboard.html', students=students_data, quizzes=quizzes_data)
     else:
         return redirect(url_for('login'))
-
-
 
 @app.route('/student/add', methods=['GET', 'POST'])
 def add_student():
@@ -99,32 +95,51 @@ def student_result(student_id):
             else:
                 return render_template('student_results.html', results=resultss)
 
-
 @app.route('/results/add', methods=['GET', 'POST'])
 def add_quiz_result():
     if request.method == 'POST':
-        student_id = int(request.form['student_id'])
-        quiz_id = int(request.form['quiz_id'])
+        student_id = int(request.form['student'])
+        quiz_id = int(request.form['quiz'])
         score = int(request.form['score'])
 
+        # Insert the result into the StudentResults table in the database
         with sqlite3.connect("hw12.db") as con:
             cur = con.cursor()
-            cur.execute("INSERT INTO Results (quiz_id,student_id,score) VALUES (?,?,?)", (quiz_id, student_id, score))
+            cur.execute("INSERT INTO StudentResults (StudentID, QuizID, Score) VALUES (?,?,?)", (student_id, quiz_id, score))
 
         return redirect(url_for('dashboard'))
 
+    # Fetch student and quiz data for dropdown menus
     con = sqlite3.connect("hw12.db")
-    con.row_factory = sqlite3.Row
-
     cur = con.cursor()
-    cur.execute("select * from Students")
-    students_data = cur.fetchall();
+    cur.execute("SELECT * FROM Students")
+    students_data = cur.fetchall()
 
-    cur = con.cursor()
-    cur.execute("select * from Quizzes")
-    quizzes_data = cur.fetchall();
-    return render_template('add_result.html', Students=students_data, Quizzes=quizzes_data, error=None)
+    cur.execute("SELECT * FROM Quizzes")
+    quizzes_data = cur.fetchall()
 
+    return render_template('add_result.html', students=students_data, quizzes=quizzes_data, error=None)
+
+@app.route('/quiz/delete/<int:quiz_id>', methods=['POST'])
+def delete_quiz(quiz_id):
+    with sqlite3.connect("hw12.db") as con:
+        cur = con.cursor()
+        cur.execute("DELETE FROM Quizzes WHERE ID=?", (quiz_id,))
+    return redirect(url_for('dashboard'))
+
+@app.route('/student/delete/<int:student_id>', methods=['POST'])
+def delete_student(student_id):
+    with sqlite3.connect("hw12.db") as con:
+        cur = con.cursor()
+        cur.execute("DELETE FROM Students WHERE ID=?", (student_id,))
+    return redirect(url_for('dashboard'))
+
+@app.route('/results/delete/<int:result_id>', methods=['POST'])
+def delete_result(result_id):
+    with sqlite3.connect("hw12.db") as con:
+        cur = con.cursor()
+        cur.execute("DELETE FROM StudentResults WHERE ID=?", (result_id,))
+    return redirect(url_for('dashboard'))
 
 if __name__ == '__main__':
     app.run(debug=True)
