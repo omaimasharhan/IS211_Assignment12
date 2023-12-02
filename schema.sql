@@ -19,3 +19,4 @@ CREATE TABLE StudentResults (
     FOREIGN KEY(QuizID) REFERENCES Quizzes(ID)
 );
 
+

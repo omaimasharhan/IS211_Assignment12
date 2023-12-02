@@ -6,10 +6,12 @@
 <body>
     <h1>Welcome to the Dashboard</h1>
 
+    <!-- Add Student button -->
     <form action="{{ url_for('add_student') }}">
         <input type="submit" value="Add Student">
     </form>
 
+    <!-- Add Quiz button -->
     <form action="{{ url_for('add_quiz') }}">
         <input type="submit" value="Add Quiz">
     </form>
@@ -17,14 +19,25 @@
     <h2>Students</h2>
     <ul>
         {% for student in students %}
-            <li>{{ student.FirstName }} {{ student.LastName }} <form method="post" action="{{ url_for('delete_student', student_id=student.ID) }}"><input type="submit" value="Delete"></form></li>
+            <li>
+                {{ student.FirstName }} {{ student.LastName }}
+                <a href="{{ url_for('student_results', student_id=student.ID) }}">View StudentResults</a>
+                <form method="post" action="{{ url_for('delete_student', student_id=student.ID) }}">
+                    <input type="submit" value="Delete">
+                </form>
+            </li>
         {% endfor %}
     </ul>
 
     <h2>Quizzes</h2>
     <ul>
         {% for quiz in quizzes %}
-            <li>{{ quiz.Subject }} - {{ quiz.QuizDate }} <form method="post" action="{{ url_for('delete_quiz', quiz_id=quiz.ID) }}"><input type="submit" value="Delete"></form></li>
+            <li>
+                {{ quiz.Subject }} - {{ quiz.QuizDate }}
+                <form method="post" action="{{ url_for('delete_quiz', quiz_id=quiz.ID) }}">
+                    <input type="submit" value="Delete">
+                </form>
+            </li>
         {% endfor %}
     </ul>
 </body>
