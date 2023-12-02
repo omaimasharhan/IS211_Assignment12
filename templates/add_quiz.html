@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Quiz</title>
+</head>
+<body>
+    <h1>Add Quiz</h1>
+    <form method="post" action="{{ url_for('add_quiz') }}">
+        <label for="subject">Subject:</label>
+        <input type="text" id="subject" name="subject" required><br><br>
+
+        <label for="quiz_date">Quiz Date:</label>
+        <input type="date" id="quiz_date" name="quiz_date" required><br><br>
+
+        <label for="noq">Number of Questions:</label>
+        <input type="number" id="noq" name="noq" required><br><br>
+
+        <input type="submit" value="Add Quiz">
+    </form>
+</body>
+</html>
