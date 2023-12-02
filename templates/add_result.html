@@ -8,15 +8,15 @@
     <form action="/results/add" method="post">
         <label for="student">Select Student:</label>
         <select id="student" name="student">
-            {% for student in students %}
-                <option value="{{ student.id }}">{{ student.name }}</option>
+            {% for student in students_data %}
+                <option value="{{ student.ID }}">{{ student.FirstName }} {{ student.LastName }}</option>
             {% endfor %}
         </select><br><br>
 
         <label for="quiz">Select Quiz:</label>
         <select id="quiz" name="quiz">
-            {% for quiz in quizzes %}
-                <option value="{{ quiz.id }}">{{ quiz.subject }}</option>
+            {% for quiz in quizzes_data %}
+                <option value="{{ quiz.ID }}">{{ quiz.Subject }}</option>
             {% endfor %}
         </select><br><br>
 

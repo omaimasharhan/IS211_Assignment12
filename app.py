@@ -60,8 +60,8 @@ def add_student():
             cur.execute("INSERT INTO Students (FirstName, LastName) VALUES (?,?)", (FirstName, LastName))
 
         return redirect(url_for('dashboard'))
-
     return render_template('add_student.html', error=None)
+
 
 
 
@@ -78,8 +78,9 @@ def add_quiz():
                         (subject, quiz_date, noq))
 
         return redirect(url_for('dashboard'))
-
     return render_template('add_quiz.html')
+
+
 
 
 @app.route('/student/<student_id>')
@@ -100,27 +101,42 @@ def student_results(student_id):
 @app.route('/results/add', methods=['GET', 'POST'])
 def add_quiz_result():
     if request.method == 'POST':
-        student_id = int(request.form['student'])
-        quiz_id = int(request.form['quiz'])
-        score = int(request.form['score'])
+        student_id = request.form.get('student')
+        quiz_id = request.form.get('quiz')
+        score = request.form.get('score')
 
-        # Insert the result into the StudentResults table in the database
-        with sqlite3.connect("hw12.db") as con:
-            cur = con.cursor()
-            cur.execute("INSERT INTO StudentResults (StudentID, QuizID, Score) VALUES (?,?,?)", (student_id, quiz_id, score))
+        if student_id and quiz_id and score:
+            try:
+                student_id =(student_id)
+                quiz_id = (quiz_id)
+                score = int(score)
 
-        return redirect(url_for('dashboard'))
+                # Insert the result into the StudentResults table in the database
+                with sqlite3.connect("hw12.db") as con:
+                    cur = con.cursor()
+                    cur.execute("INSERT INTO StudentResults (StudentID, QuizID, Score) VALUES (?,?,?)", (student_id, quiz_id, score))
 
-    # Fetch student and quiz data for dropdown menus
-    con = sqlite3.connect("hw12.db")
-    cur = con.cursor()
-    cur.execute("SELECT * FROM Students")
-    students_data = cur.fetchall()
+                return redirect(url_for('dashboard'))
 
-    cur.execute("SELECT * FROM Quizzes")
-    quizzes_data = cur.fetchall()
+            except ValueError:
+                return "Invalid data format. Please enter valid values."
 
-    return render_template('add_result.html', students=students_data, quizzes=quizzes_data, error=None)
+        else:
+            return "Please fill out all fields."
+    else:
+        # Fetch student and quiz data for dropdown menus
+        con = sqlite3.connect("hw12.db")
+        cur = con.cursor()
+        cur.execute("SELECT * FROM Students")
+        students_data = cur.fetchall()
+        print(students_data)
+
+        cur.execute("SELECT * FROM Quizzes")
+        quizzes_data = cur.fetchall()
+        print(quizzes_data)
+
+        # Render the form for adding quiz results
+        return render_template('add_result.html', students_data=students_data, quizzes_data=quizzes_data, error=None)
 
 @app.route('/quiz/delete/<int:quiz_id>', methods=['POST'])
 def delete_quiz(quiz_id):
