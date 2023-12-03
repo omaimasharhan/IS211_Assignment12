@@ -63,8 +63,6 @@ def add_student():
     return render_template('add_student.html', error=None)
 
 
-
-
 @app.route('/quiz/add', methods=['GET', 'POST'])
 def add_quiz():
     if request.method == 'POST':
@@ -79,7 +77,6 @@ def add_quiz():
 
         return redirect(url_for('dashboard'))
     return render_template('add_quiz.html')
-
 
 
 
@@ -107,14 +104,14 @@ def add_quiz_result():
 
         if student_id and quiz_id and score:
             try:
-                student_id =(student_id)
-                quiz_id = (quiz_id)
+                student_id = int(student_id)
+                quiz_id = int(quiz_id)
                 score = int(score)
 
-                # Insert the result into the StudentResults table in the database
                 with sqlite3.connect("hw12.db") as con:
                     cur = con.cursor()
-                    cur.execute("INSERT INTO StudentResults (StudentID, QuizID, Score) VALUES (?,?,?)", (student_id, quiz_id, score))
+                    cur.execute("INSERT INTO StudentResults (StudentID, QuizID, Score) VALUES (?,?,?)",
+                                (student_id, quiz_id, score))
 
                 return redirect(url_for('dashboard'))
 
@@ -124,18 +121,14 @@ def add_quiz_result():
         else:
             return "Please fill out all fields."
     else:
-        # Fetch student and quiz data for dropdown menus
-        con = sqlite3.connect("hw12.db")
-        cur = con.cursor()
-        cur.execute("SELECT * FROM Students")
-        students_data = cur.fetchall()
-        print(students_data)
+        with sqlite3.connect("hw12.db") as con:
+            cur = con.cursor()
+            cur.execute("SELECT * FROM Students")
+            students_data = cur.fetchall()
 
-        cur.execute("SELECT * FROM Quizzes")
-        quizzes_data = cur.fetchall()
-        print(quizzes_data)
+            cur.execute("SELECT ID, Subject FROM Quizzes")
+            quizzes_data = cur.fetchall()
 
-        # Render the form for adding quiz results
         return render_template('add_result.html', students_data=students_data, quizzes_data=quizzes_data, error=None)
 
 @app.route('/quiz/delete/<int:quiz_id>', methods=['POST'])
