@@ -3,7 +3,6 @@ import sqlite3
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
-# Define the correct username and password
 correct_username = 'admin'
 correct_password = 'password'
 
@@ -19,7 +18,6 @@ def login():
         password = request.form['password']
 
         if username == correct_username and correct_password == password:
-            # Store the username in the session to indicate the user is logged in
             session['username'] = username
             return redirect(url_for('dashboard'))
         else:
@@ -29,7 +27,7 @@ def login():
 
 @app.route('/dashboard')
 def dashboard():
-    # Check if the user is logged in by verifying the username in the session
+
     if 'username' in session and session['username'] == correct_username:
         con = sqlite3.connect("hw12.db")
         con.row_factory = sqlite3.Row
@@ -79,18 +77,26 @@ def add_quiz():
     return render_template('add_quiz.html')
 
 
-
 @app.route('/student/<student_id>')
 def student_results(student_id):
     if 'username' in session and session['username'] == correct_username:
         with sqlite3.connect("hw12.db") as con:
             cur = con.cursor()
-            cur.execute("SELECT * FROM StudentResults WHERE StudentID=?", (int(student_id),))
+
+            cur.execute("SELECT FirstName, LastName FROM Students WHERE ID=?", (int(student_id),))
+            student_name = cur.fetchone()
+
+            cur.execute("SELECT Students.FirstName, Students.LastName, Quizzes.Subject, StudentResults.Score \
+                         FROM StudentResults \
+                         INNER JOIN Students ON Students.ID = StudentResults.StudentID \
+                         INNER JOIN Quizzes ON Quizzes.ID = StudentResults.QuizID \
+                         WHERE Students.ID=?", (int(student_id),))
             results = cur.fetchall()
+
             if not results:
                 return 'No Results'
             else:
-                return render_template('student_results.html', results=results)
+                return render_template('student_results.html', results=results, student_name=student_name)
     else:
         return redirect(url_for('login'))
 

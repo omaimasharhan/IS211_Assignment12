@@ -10,7 +10,6 @@
         <select id="student" name="student">
             {% for student in students_data %}
                 <option value="{{ student[0] }}">{{ student[1] }} {{ student[2] }}</option>
-                <!-- student[0] is ID, student[1] is FirstName, student[2] is LastName -->
             {% endfor %}
         </select><br><br>
 
@@ -18,7 +17,7 @@
         <select id="quiz" name="quiz">
             {% for quiz in quizzes_data %}
                 <option value="{{ quiz[0] }}">{{ quiz[1] }}</option>
-                <!-- quiz[0] is ID, quiz[1] is Subject -->
+
             {% endfor %}
         </select><br><br>
 

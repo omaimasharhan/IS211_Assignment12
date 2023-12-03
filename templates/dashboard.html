@@ -3,7 +3,7 @@
 <head>
     <title>Dashboard</title>
     <style>
-        /* Some basic styling for a more modern look */
+
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
@@ -42,14 +42,12 @@
 <body>
     <h1>Welcome to the Dashboard</h1>
 
-    <!-- Buttons for adding Student, Quiz, and Quiz Result -->
     <div>
         <a href="{{ url_for('add_student') }}" class="button">Add Student</a>
         <a href="{{ url_for('add_quiz') }}" class="button">Add Quiz</a>
         <a href="{{ url_for('add_quiz_result') }}" class="button">Add Quiz Result</a>
     </div>
 
-    <!-- Display Students -->
     <h2>Students</h2>
     <ul>
         {% for student in students %}
@@ -63,7 +61,6 @@
         {% endfor %}
     </ul>
 
-    <!-- Display Quizzes -->
     <h2>Quizzes</h2>
     <ul>
         {% for quiz in quizzes %}
